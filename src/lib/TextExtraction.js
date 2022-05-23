@@ -27,9 +27,10 @@ class TextExtraction {
   /**
    * Returns parts of the text with their own props
    * @public
+   * @param {Object} currentMessage - Message object from gifted chat
    * @return {Object[]} - props for all the parts of the text
    */
-  parse() {
+  parse(currentMessage) {
     let parsedTexts = [{ children: this.text }];
     this.patterns.forEach((pattern) => {
       let newParts = [];
@@ -37,7 +38,7 @@ class TextExtraction {
       const tmp = pattern.nonExhaustiveModeMaxMatchCount || 0;
       const numberOfMatchesPermitted = Math.min(
         Math.max(Number.isInteger(tmp) ? tmp : 0, 0) ||
-          Number.POSITIVE_INFINITY,
+        Number.POSITIVE_INFINITY,
         Number.POSITIVE_INFINITY,
       );
 
@@ -76,6 +77,7 @@ class TextExtraction {
               matches[0],
               matches,
               indexOfMatchedString,
+              currentMessage,
             ),
           );
 
@@ -107,9 +109,10 @@ class TextExtraction {
    * @param {String} text - Text matching the pattern
    * @param {String[]} matches - Result of the RegExp.exec
    * @param {Integer} index - Index of the matched string in the whole string
+   * @param {Object} currentMessage - Message object from gifted chat
    * @return {Object} props for the matched text
    */
-  getMatchedPart(matchedPattern, text, matches, index) {
+  getMatchedPart(matchedPattern, text, matches, index, currentMessage) {
     let props = {};
 
     Object.keys(matchedPattern).forEach((key) => {
@@ -123,7 +126,7 @@ class TextExtraction {
 
       if (typeof matchedPattern[key] === 'function') {
         // Support onPress / onLongPress functions
-        props[key] = () => matchedPattern[key](text, index);
+        props[key] = () => matchedPattern[key](text, index, currentMessage);
       } else {
         // Set a prop with an arbitrary name to the value in the match-config
         props[key] = matchedPattern[key];
