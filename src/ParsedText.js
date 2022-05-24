@@ -107,7 +107,9 @@ class ParsedText extends React.Component {
       this.getPatterns(),
     );
 
-    return textExtraction.parse().map((props, index) => {
+    const currentMessage = this.props.currentMessage;
+
+    return textExtraction.parse(currentMessage).map((props, index) => {
       const { style: parentStyle } = this.props;
       const { style, ...remainder } = props;
       return (
